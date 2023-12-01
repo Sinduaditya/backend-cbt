@@ -21,3 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // register
 Route::post('/register', [AuthController::class,'register']);
+
+// login
+Route::post('/login', [AuthController::class,'login']);
+
+// logout perlu menggunakan auth:scantum karna user sudah berada di dalam auth:scantum ini
+Route::post('/logout', [AuthController::class,'logout'])->middleware('auth:sanctum');
