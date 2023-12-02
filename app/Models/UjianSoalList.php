@@ -9,4 +9,10 @@ class UjianSoalList extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'ujian_id',
+        'soal_id',
+        'kebenaran'
+    ];
+
 }

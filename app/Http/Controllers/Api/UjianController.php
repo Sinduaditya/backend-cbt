@@ -3,47 +3,73 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SoalResource;
+use App\Models\Soal;
+use App\Models\Ujian;
+use App\Models\UjianSoalList;
 use Illuminate\Http\Request;
 
 class UjianController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    // function create ujian
+    public function createUjian(Request $request){
+        //get 20 soal angka random
+        $soalNumeric = Soal::where('kategori','Numeric')->inRandomOrder()->limit(20)->get();
+        // get 20 soal verbal random
+        $soalVerbal = Soal::where('kategori','Verbal')->inRandomOrder()->limit(20)->get();
+        // get 20 soal logika random
+        $soalLogika = Soal::where('kategori','Logika')->inRandomOrder()->limit(20)->get();
+
+        // create ujian
+        $ujian = Ujian::create([
+            'user_id' => $request->user()->id,
+        ]);
+
+
+        foreach ($soalNumeric as $soal) {
+            UjianSoalList::create([
+                'ujian_id' => $ujian->id,
+                'soal_id' => $soal->id,
+            ]);
+        }
+
+        foreach ($soalVerbal as $soal) {
+            UjianSoalList::create([
+                'ujian_id' => $ujian->id,
+                'soal_id' => $soal->id,
+            ]);
+        }
+
+        foreach ($soalLogika as $soal) {
+            UjianSoalList::create([
+                'ujian_id' => $ujian->id,
+                'soal_id' => $soal->id,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Ujian berhasil di buat',
+            'data' => $ujian
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    // get list soal by kategori
+    public function getListByKategori(Request $request){
+        $ujian = Ujian::where('user_id', $request->user()->id)->first(); // mengambil ujian berdasarkan ujiannya
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $ujianSoalList = UjianSoalList::where('ujian_id', $ujian->id)->get(); // mencari ujian soal list dengan  by user_id
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $ujianSoalListId = []; // penampung data
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        foreach ($ujianSoalList as $soal) {
+            array_push($ujianSoalListId, $soal->soal_id);
+        } // melakukan push ke dalam array $ujianSoalList yang sesuai dengan id yang di dapatkan
+
+        $soal = Soal::whereIn('id', $ujianSoalListId)->where('kategori', $request->kategori)->get(); // mengambil soal apa bila id nya sesuai dengan UjianSoalListId dan ketika kategorinya sesuai request->kategori
+
+        return response()->json([
+            'message' => 'Berhasil mendapatkan soal',
+            'data' => SoalResource::collection($soal),
+        ]);
     }
 }
