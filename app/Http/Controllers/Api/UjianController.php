@@ -59,17 +59,39 @@ class UjianController extends Controller
 
         $ujianSoalList = UjianSoalList::where('ujian_id', $ujian->id)->get(); // mencari ujian soal list dengan  by user_id
 
-        $ujianSoalListId = []; // penampung data
+        $soalIds = $ujianSoalList->pluck('soal_id');
 
-        foreach ($ujianSoalList as $soal) {
-            array_push($ujianSoalListId, $soal->soal_id);
-        } // melakukan push ke dalam array $ujianSoalList yang sesuai dengan id yang di dapatkan
-
-        $soal = Soal::whereIn('id', $ujianSoalListId)->where('kategori', $request->kategori)->get(); // mengambil soal apa bila id nya sesuai dengan UjianSoalListId dan ketika kategorinya sesuai request->kategori
+        dd($soalIds);
+        $soal = Soal::whereIn('id', $soalIds)->where('kategori', $request->kategori)->get(); // mengambil soal apa bila id nya sesuai dengan UjianSoalListId dan ketika kategorinya sesuai request->kategori
 
         return response()->json([
             'message' => 'Berhasil mendapatkan soal',
             'data' => SoalResource::collection($soal),
+        ]);
+    }
+
+    //jawaban soal
+    public function jawabanSoal(Request $request){
+        $validatedData = $request->validate([
+            'soal_id' => 'required',
+            'jawaban' => 'required'
+        ]);
+
+        $ujian = Ujian::where('user_id', $request->user()->id)->first();
+        $ujianSoalList = UjianSoalList::where('ujian_id', $ujian->id)->where('soal_id', $validatedData['soal_id'])->first();
+        $soal = Soal::where('id', $validatedData['soal_id'])->first();
+
+        // cek jawaban
+        if ($soal->kunci == $validatedData['jawaban']) {
+            $ujianSoalList->kebenaran = true;
+            $ujianSoalList->update();
+        } else{
+            $ujianSoalList->kebenaran = false;
+            $ujianSoalList->update();
+        }
+        return response()->json([
+            'message' => 'Berhasil Menyimpan Jawaban',
+            'data' => $ujianSoalList->kebenaran,
         ]);
     }
 }
