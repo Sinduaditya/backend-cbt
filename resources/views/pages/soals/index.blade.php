@@ -13,12 +13,11 @@
             <div class="section-header">
                 <h1>Soals</h1>
                 <div class="section-header-button">
-                    <a href="{{ route('soal.create') }}" class="btn btn-primary">Add New Soal</a>
+                    <a href="{{ route('soal.create') }}" class="btn btn-primary">Add New Question</a>
                 </div>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Soals</a></div>
-                    <div class="breadcrumb-item">All Soals</div>
+                    <div class="breadcrumb-item">All Questions</div>
                 </div>
             </div>
             <div class="section-body">
@@ -36,17 +35,11 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4>All Soals</h4>
-                            </div>
                             <div class="card-body">
                                 <div class="float-left">
-                                    <select class="form-control selectric">
-                                        <option>Action For Selected</option>
-                                        <option>Move to Draft</option>
-                                        <option>Move to Pending</option>
-                                        <option>Delete Pemanently</option>
-                                    </select>
+                                    <div class="card-header">
+                                        <h4>All Soals</h4>
+                                    </div>
                                 </div>
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('soal.index') }}">
@@ -66,9 +59,8 @@
                                     <table class="table-striped table">
                                         <thead>
                                             <tr>
-                                                <th rowspan="2">ID</th>
-                                                <th rowspan="2">Soal</th>
-                                                <th colspan="4">Jawaban</th>
+                                                <th rowspan="3">Question</th>
+                                                <th colspan="5">Answer</th>
                                                 <th rowspan="2">Action</th>
                                             </tr>
                                             <tr>
@@ -76,17 +68,18 @@
                                                 <th>B</th>
                                                 <th>C</th>
                                                 <th>D</th>
+                                                <th>Answer key</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($soals as $soal)
                                                 <tr>
-                                                    <td>{{ $soal->id }}</td>
                                                     <td>{{ $soal->pertanyaan }}</td>
                                                     <td>{{ $soal->jawaban_a }}</td>
                                                     <td>{{ $soal->jawaban_b }}</td>
                                                     <td>{{ $soal->jawaban_c }}</td>
                                                     <td>{{ $soal->jawaban_d }}</td>
+                                                    <td>{{ $soal->kunci }}</td>
                                                     <td>
                                                         <div class="d-flex justify-content-center">
                                                             <a href='{{ route('soal.edit', $soal->id) }}'
